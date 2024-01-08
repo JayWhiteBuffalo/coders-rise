@@ -6,7 +6,7 @@ Defines endpoints and routes, interacts with services, and prepares responses.
 package org.example.controllers;
 
 import org.example.models.College;
-import org.example.repositories.CollegeRepository;
+import org.example.repository.CollegeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

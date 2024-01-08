@@ -6,7 +6,7 @@ package org.example.services;
 
 
 import org.example.models.College;
-import org.example.repositories.CollegeRepository;
+import org.example.repository.CollegeRepository;
 
 import java.util.List;
 
