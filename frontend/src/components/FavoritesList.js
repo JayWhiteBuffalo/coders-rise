@@ -14,7 +14,7 @@ export default function FavoritesList() {
   const [mergedData, setMergedData] = useState([]);
 
   // local variable
-  const userId = 152;
+  const userId = 45;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,8 +26,10 @@ export default function FavoritesList() {
       }
     };
 
-    fetchData();
-  }, []);
+    if (userId) {
+      fetchData();
+    }
+  }, [userId]);
 
   useEffect(() => {
     const fetchDataFromCSC = async () => {
@@ -75,9 +77,9 @@ export default function FavoritesList() {
   return (
     <>
       {!dataFromCSC.length > 0 ? (
-        <div class="d-flex align-items-center">
+        <div className="d-flex align-items-center">
           <strong role="status">Loading...</strong>
-          <div class="spinner-border ms-auto" aria-hidden="true"></div>
+          <div className="spinner-border ms-auto" aria-hidden="true"></div>
         </div>
       ) : (
         <div className="container">

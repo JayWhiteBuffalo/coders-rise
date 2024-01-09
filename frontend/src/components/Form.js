@@ -3,13 +3,15 @@ import React from "react"
 import states from "../services/States"
 import axios from "axios"
 import cip_4_digit from "../cip_4_digit.json"
+import CollegeService from "../services/CollegeService"
+import { useNavigate } from "react-router-dom";
 
 
 
 
 export default function Form(){
   
-
+  const navigate = useNavigate();
   const[degreeType, setDegreeType] = useState(0)
   const[stateName, setStateName] = useState("")
   const[maxTuition, setMaxTuition] = useState(0)
@@ -33,6 +35,27 @@ export default function Form(){
     return a.title < b.title ? -1 : a.title > b.title ? 1 : 0;
 });
 
+const handleAddFavorites = function() {
+  //loop through favorites array use .map() and for each call axios.create
+  const data = {
+    userId: 45,
+    notes: null,
+    appStatus: 0,
+    collegeId: null,
+  };
+  favorites.map((college) => {
+    data["collegeId"] = college;
+    CollegeService.create(data)
+      .then((response) => {
+        // console.log(response.data);
+      })
+      .catch((e) => {
+        // console.log(e);
+      });
+  });
+  navigate("/favorites");
+};
+
 
 
 
@@ -46,13 +69,6 @@ export default function Form(){
  schoolSize == 3  ? '&latest.student.size__range=15001..100000' : "" 
  const degreeProgramChosenParam = `&latest.programs.cip_4_digit.code=${degreeProgramChosen}`
  
-console.log(favorites)
-console.log(results)
-console.log(degreePrograms[2].title)
-console.log(degreePrograms[2].code)
-console.log(degreeProgramChosen)
-console.log(baseUrl)
-
 
  
 
@@ -141,7 +157,17 @@ console.log(baseUrl)
     </form> 
     <br></br>  
 
+   
+
       <div>
+          <button
+            type="submit"
+            className="mt-5 btn btn-primary"
+            onClick={handleAddFavorites}
+          >
+            Add Selected Colleges to Favorites
+          </button>
+
           <table className="table" key="school list table">
           <thead key="table heading">
             <tr key="table row heading">

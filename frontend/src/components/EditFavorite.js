@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CollegeDataService from "../services/CollegeService";
-const userId = 152;
+const userId = 45;
 
 export default function EditFavorite({ collegeId }) {
   // Data passed over from React-Router (exists on location)
