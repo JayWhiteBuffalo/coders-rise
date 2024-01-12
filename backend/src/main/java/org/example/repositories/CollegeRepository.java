@@ -2,6 +2,10 @@
 Facilitates data access and management for colleges within the database, providing
 methods for CRUD operations and college-related database interactions.
  */
+/*
+Facilitates data access and management for colleges within the database, providing
+methods for CRUD operations and college-related database interactions.
+ */
 package org.example.repositories;
 
 import org.example.models.College;
@@ -10,7 +14,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface CollegeRepository extends JpaRepository<College, Integer> {
 
     Optional<College> findByUserIdAndCollegeId(int userId, int collegeId);
