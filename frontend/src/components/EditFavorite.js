@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CollegeDataService from "../services/CollegeService";
-const userId = 152;
+import UserContext from "../UserContext";
+const userId = 45;
 
 export default function EditFavorite({ collegeId }) {
   // Data passed over from React-Router (exists on location)
@@ -14,11 +15,12 @@ export default function EditFavorite({ collegeId }) {
   const [collegeName, setCollegeName] = useState(data.name);
   const [appStatus, setAppStatus] = useState(data.appStatus);
   const [notes, setNotes] = useState(data.notes);
+  const {currentUser} = useContext(UserContext);
 
   function handleDelete() {
     alert("hit delete");
     CollegeDataService.remove(userId, collegeId).then((res) => {
-      console.log(res);
+      navigate("/favorites");
     });
   }
   return (

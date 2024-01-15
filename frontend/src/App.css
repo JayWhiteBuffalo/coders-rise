@@ -1,16 +1,24 @@
 /* .App {
   text-align: center;
-} */
+} 
 
-/* .App-logo {
+ .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
+
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
+}
+
+#myImage {
+  max-width: 300px;
+  max-height: 200px;
+  width: auto;
+  height: auto;
 }
 
 .App-header {
@@ -36,3 +44,21 @@
     transform: rotate(360deg);
   }
 } */
+modal {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+.right-center-button {
+  align-items: right;
+}
+.center-modal {
+  font-size: 18px;
+  align-self: center;
+}
