@@ -37,12 +37,12 @@ public class contact {
 
         }
 
-        public contact(int id, String username, String firstName, String lastName, String email, String notes) {
+        public contact(int id, String username, String email, String firstName, String lastName, String notes) {
             this.id = id;
-            this.username= username;
+            this.username = username;
+            this.email = email;
             this.firstName = firstName;
             this.lastName = lastName;
-            this.email = email;
             this.notes = notes;
         }
 
@@ -53,10 +53,6 @@ public class contact {
         public void setId(int id) {
             this.id = id;
         }
-
-        public String getUsername(){return username;}
-
-        public void setUsername(String username) {this.username = username;}
 
         public String getFirstName() {
             return firstName;
@@ -87,16 +83,20 @@ public class contact {
             this.notes = notes;
         }
 
+        public String getUsername() {return username;}
+
+    public void setUsername(String username) {this.username = username;}
+
 
 
         @Override
         public String toString() {
             return "contact{" +
                     "id=" + id +
-                    ", username=" + username +
+                    ", username=" +username+
+                    ", email=" + email+
                     ", firstName=" + firstName +
                     ", lastName=" + lastName +
-                    ", email=" +email+
                     ", notes='" + notes + '\'' +
                     '}';
         }

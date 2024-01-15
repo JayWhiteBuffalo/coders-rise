@@ -6,6 +6,10 @@ its attributes to the database schema and encapsulating user-related data.
 Represents the structure and properties of a user entity within the application, mapping
 its attributes to the database schema and encapsulating user-related data.
  */
+/*
+Represents the structure and properties of a user entity within the application, mapping
+its attributes to the database schema and encapsulating user-related data.
+ */
 package org.example.models;
 
 import jakarta.persistence.*;
