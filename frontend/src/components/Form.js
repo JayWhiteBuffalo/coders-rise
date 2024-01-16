@@ -9,6 +9,7 @@ import UserContext from "../UserContext";
 import authHeader from "../services/auth-header";
 import { useRef } from "react";
 import CollegeCard from "./CollegeCard";
+import { useEffect } from "react";
 
 // const userId = null;
 
@@ -22,13 +23,11 @@ export default function Form() {
   const [degreeProgramChosen, setDegreeProgramChosen] = useState("");
   const [favorites, setFavorites] = useState([]);
   const [selectedSchool, setSelectedSchool] = useState(null);
-
+  const [articles, setArticles] = useState([]);
+  const [loadingArticles, setLoadingArticles] = useState(false);
+  
   const modalRef = useRef();
 
-  const openModal = (school) => {
-    setSelectedSchool(school);
-    modalRef.current.showModal();
-  }
 
   const closeModal= () => {
     setSelectedSchool(null);
@@ -37,7 +36,7 @@ export default function Form() {
 
 
   // get user/userid from context
-  const { currentUser } = 45 //useContext(UserContext);
+  const { currentUser } = 1153; //useContext(UserContext);
 
     const axiosWithAuth = axios.create({
       headers: authHeader(),
@@ -97,7 +96,7 @@ export default function Form() {
   });
 
   const baseUrl = `http://api.data.gov/ed/collegescorecard/v1/schools.json?api_key=${process.env.REACT_APP_API_KEY}&per_page=100`;
- const fieldsDefault = `&fields=school.long_description,school.name,school.city,school.state,latest.student.size,latest.cost.tuition.in_state,latest.cost.tuition.out_of_state,school.degrees_awarded.highest,id,school.school_url,latest.admissions.admission_rate.overall,latest.admissions.sat_scores.average.overall,latest.admissions.act_scores.midpoint.cumulative`;
+  const fieldsDefault = `&fields=school.name,school.city,school.state,latest.student.size,latest.cost.tuition.in_state,latest.cost.tuition.out_of_state,school.degrees_awarded.highest,id,school.school_url,latest.admissions.admission_rate.overall,latest.admissions.sat_scores.average.overall,latest.admissions.act_scores.midpoint.cumulative`;
   const stateParam = !stateName == "" ? `&school.state=${stateName}` : "";
   const tuitionParam = maxTuition
     ? `&latest.cost.tuition.in_state__range=1..${maxTuition}`
@@ -128,8 +127,31 @@ export default function Form() {
     schoolSizeParam +
     degreeProgramChosenParam;
 
+    const openModal = (school) => {
+      setSelectedSchool(school);
+      modalRef.current.showModal();
+    }
 
-  // console.log(apiCall);
+    useEffect(() => {
+      if (selectedSchool) {
+        setLoadingArticles(true);
+    
+        const collegeName = selectedSchool["school.name"];
+        const baseArticleURL = `http://gnews.io/api/v4`;
+    
+        console.log(process.env.REACT_APP_API_ARTICLE_KEY);
+        fetch(baseArticleURL+`/search?q=${collegeName}&lang=en&country=us&max=10&apikey=${process.env.REACT_APP_API_ARTICLE_KEY}`)
+          .then((response) => response.json())
+          .then((data) => {
+            setArticles(data.articles);
+          })
+          .catch((error) => console.error("Error fetching articles:", error))
+          .finally(() => {
+            setLoadingArticles(false);
+          });
+      }
+    }, [selectedSchool]);
+
   return (
     <div className="App">
       <form
@@ -138,12 +160,29 @@ export default function Form() {
           // clear existing checked colleges
           setFavorites([]);
           axios.get(apiCall).then((res) => {
-            //call to API and setting results, sending alert if no results are found
-            if(res.data["results"].length == 0) {
-              alert("There are no results for this search!")
-            } else
-            setResults(res.data["results"]);  
+            // call to API and setting results, sending alert if no results are found
+            if (res.data["results"].length === 0) {
+              alert("There are no results for this search!");
+            } else {
+              const sortedResults = res.data["results"].sort((a, b) =>
+                compareAdmissionRates(a, b)
+              );
+              setResults(sortedResults);
+            }
           });
+          
+          const compareAdmissionRates = (schoolA, schoolB) => {
+            const admissionRateA = schoolA["latest.admissions.admission_rate.overall"];
+            const admissionRateB = schoolB["latest.admissions.admission_rate.overall"];
+          
+            // Handle cases where admission rates are null or undefined
+            if (admissionRateA === null && admissionRateB === null) return 0;
+            if (admissionRateA === null) return 1;
+            if (admissionRateB === null) return -1;
+          
+            // Compare admission rates
+            return admissionRateB - admissionRateA;
+          };
         }}
       >
         <div className="mb-3">
@@ -190,7 +229,6 @@ export default function Form() {
             ))}
           </select>
         </div>
-
         <div className="mb-3">
           <label value={maxTuition}>Tuition maximum:</label>
           <input
@@ -244,9 +282,10 @@ export default function Form() {
             </button>
           </>
         )}
-
+        <p><h10 className="mt-3 lead">Colleges are sorted by the highest acceptance rate to the lowest</h10>
+         </p>
         <table className="table">
-          <thead>
+         <thead>
             <tr>
               <th scope="col">Save to Favorites</th>
 
@@ -294,66 +333,87 @@ export default function Form() {
 
         {/*modal*/}
         {selectedSchool && (
-        <dialog id="modal" ref={modalRef} fixed>
-          <button className="btn btn-primary" onClick={() => modalRef.current.close()}>Close</button>
-          <div className="col">
-            <div className="card mt-5 h-100">
-              <div className="card-body">
-              <h5 className="card-title">{selectedSchool["school.name"]}</h5>
-              <h6>{`${selectedSchool["school.degrees_awarded.highest"]} year | ${selectedSchool["school.city"]}, ${selectedSchool["school.state"]}`}</h6>
-              <hr></hr>
-                <div className="row">
-                  <div className="col-md-6">
-                    <p className="card-text">
-                    Student Body Size:<br></br>
-                    {selectedSchool["latest.student.size"]}
-                    </p>
-                    <p className="card-text">
-                    In-state Tuition:<br></br>
-                    {selectedSchool["latest.cost.tuition.in_state"] === null
-                      ? "Data not provided"
-                      : "$" + selectedSchool["latest.cost.tuition.in_state"]}
-                    </p>
-                    <p className="card-text">
-                      Out-of-state Tuition:<br></br>
-                      {selectedSchool["latest.cost.tuition.out_of_state"] === null
-                      ? "Data not provided"
-                      : "$" + selectedSchool["latest.cost.tuition.out_of_state"]}
-                    </p>
-                  </div>
-                <div className="col-md-6">
-                <p className="card-text">
-                  Admission Rate:<br></br>
-                  {Math.round(selectedSchool["latest.admissions.admission_rate.overall"] * 100) + "%"}
-                </p>
-                <p className="card-text">
-                  Average SAT Score:<br></br>
-                  {selectedSchool["latest.admissions.sat_scores.average.overall"]}
-                </p>
-                <p className="card-text">
-                  Average ACT Score:<br></br>
-                  {selectedSchool["latest.admissions.act_scores.midpoint.cumulative"]}
-                </p>
-              </div>
+  <dialog id="modal" ref={modalRef} fixed>
+    <div className="col">
+      <div className="card mt-5 h-100">
+        <div className="card-body">
+          <h5 className="card-title">{selectedSchool["school.name"]}</h5>
+          <h6>{`${selectedSchool["school.degrees_awarded.highest"]} year | ${selectedSchool["school.city"]}, ${selectedSchool["school.state"]}`}</h6>
+          <hr></hr>
+          <div className="row">
+            <div className="col-md-6">
+              <p className="card-text">
+                Student Body Size:<br></br>
+                {selectedSchool["latest.student.size"]}
+              </p>
+              <p className="card-text">
+                In-state Tuition:<br></br>
+                {selectedSchool["latest.cost.tuition.in_state"] === null
+                  ? "Data not provided"
+                  : "$" + selectedSchool["latest.cost.tuition.in_state"]}
+              </p>
+              <p className="card-text">
+                Out-of-state Tuition:<br></br>
+                {selectedSchool["latest.cost.tuition.out_of_state"] === null
+                  ? "Data not provided"
+                  : "$" + selectedSchool["latest.cost.tuition.out_of_state"]}
+              </p>
             </div>
-            <div className="mt-3">
-              <a
-                href={
-                  selectedSchool["school.school_url"].includes("http")
-                    ? selectedSchool["school.school_url"]
-                    : `https://${selectedSchool["school.school_url"]}`
-                }
-                  target="_blank"
-                  className="btn btn-primary"
-                >
-                  Visit
-              </a>
+            <div className="col-md-6">
+              <p className="card-text">
+                Admission Rate:<br></br>
+                {selectedSchool["latest.admissions.admission_rate.overall"] !== undefined &&
+                selectedSchool["latest.admissions.admission_rate.overall"] != null
+                  ? Math.round(selectedSchool["latest.admissions.admission_rate.overall"] * 100) + "%"
+                  : "Data not provided"}
+              </p>
+              <p className="card-text">
+                Average SAT Score:<br></br>
+                {selectedSchool["latest.admissions.sat_scores.average.overall"] !== undefined
+                  ? selectedSchool["latest.admissions.sat_scores.average.overall"]
+                  : "Data not provided"}
+              </p>
+              <p className="card-text">
+                Average ACT Score:<br></br>
+                {selectedSchool["latest.admissions.act_scores.midpoint.cumulative"] !== undefined
+                  ? selectedSchool["latest.admissions.act_scores.midpoint.cumulative"]
+                  : "Data not provided"}
+              </p>
             </div>
+          </div>
+          <div className="mt-3">
+            <a
+              href={
+                selectedSchool["school.school_url"] &&
+                selectedSchool["school.school_url"].includes("http")
+                  ? selectedSchool["school.school_url"]
+                  : `https://${selectedSchool["school.school_url"]}`
+              }
+              target="_blank"
+              className="btn btn-primary"
+            >
+              School Website
+            </a>
+          </div>
+          <div className="mt-3">
+            {/* Render articles */}
+            <h4>Articles:</h4>
+            {loadingArticles ? (
+              <p>Loading articles...</p>
+            ) : (
+              articles.map((article, index) => (
+                <a href={article.url} key={index}>{index} : {article.title}</a>
+              ))
+            )}
+          </div>
+          <div className="mt-3">
+            <button className="btn btn-primary" onClick={() => modalRef.current.close()}>Close</button>
           </div>
         </div>
       </div>
-    </dialog>
-    )}
+    </div>
+  </dialog>
+)}
     </div>
   </div>
   );

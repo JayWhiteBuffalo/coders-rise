@@ -3,15 +3,17 @@ import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 import { isEmail } from "validator";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import authHeader from "../services/auth-header";
+import Navbar from "./Navbar";
 
 import AuthService from "../services/auth.service";
 
 
 const required = (value) => {
     // Create an instance of Axios with the authorization header
+    
 
   if (!value) {
     return (
@@ -123,6 +125,7 @@ const Register = () => {
   return (
     <div className="col-md-12">
       <div className="card login-logout-card card-container">
+        <Navbar />
         <img
           src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
           id="myImage"
