@@ -91,7 +91,6 @@ const ContactForm = () => {
           id="username"
           value={formData.username}
           onChange={handleChange}
-          required
           />
         </div>
       </>
