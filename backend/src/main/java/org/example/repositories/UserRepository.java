@@ -22,6 +22,7 @@ public interface UserRepository extends JpaRepository<User, Double> {
     Boolean existsByEmail(String email);
 
 
+    Optional<User> findById(Integer id);
 //    // Method to save a new user to the database
 //    public default void saveUser(User user) {
 //        // Database query to insert user details into the User table
