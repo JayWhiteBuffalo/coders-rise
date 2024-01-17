@@ -8,8 +8,10 @@ import { useNavigate } from "react-router-dom";
 import UserContext from "../UserContext";
 import authHeader from "../services/auth-header";
 import { useRef } from "react";
-import CollegeCard from "./CollegeCard";
 import { useEffect } from "react";
+import eventBus from "../common/EventBus";
+import AuthService from "../services/auth.service";
+
 
 // const userId = null;
 
@@ -25,18 +27,16 @@ export default function Form() {
   const [selectedSchool, setSelectedSchool] = useState(null);
   const [articles, setArticles] = useState([]);
   const [loadingArticles, setLoadingArticles] = useState(false);
-  
-  const modalRef = useRef();
 
+  const modalRef = useRef();
 
   const closeModal= () => {
     setSelectedSchool(null);
     modalRef.current.close();
   }
 
-
-  // get user/userid from context
-  const { currentUser } = 1153; //useContext(UserContext);
+ 
+  const { currentUser } = useContext(UserContext);
 
     const axiosWithAuth = axios.create({
       headers: authHeader(),
@@ -132,25 +132,33 @@ export default function Form() {
       modalRef.current.showModal();
     }
 
+    let articleURL='';
+    let articleTitle='';
     useEffect(() => {
       if (selectedSchool) {
-        setLoadingArticles(true);
     
         const collegeName = selectedSchool["school.name"];
         const baseArticleURL = `http://gnews.io/api/v4`;
     
-        console.log(process.env.REACT_APP_API_ARTICLE_KEY);
-        fetch(baseArticleURL+`/search?q=${collegeName}&lang=en&country=us&max=10&apikey=${process.env.REACT_APP_API_ARTICLE_KEY}`)
-          .then((response) => response.json())
-          .then((data) => {
-            setArticles(data.articles);
-          })
-          .catch((error) => console.error("Error fetching articles:", error))
-          .finally(() => {
+        axios.get(baseArticleURL+ `/search?q=${collegeName}&lang=en&country=us&max=1&apikey=${process.env.REACT_APP_API_ARTICLE_KEY}`)
+        .then(response => {
+          const articles = response.data.articles;
+          articleURL = articles.url;
+          articleTitle=articles.title;
+
+          console.log(articleTitle);
+          console.log(articleURL);
+        })
+        .catch((error) => console.error('Error fetching articles:', error))
+       
+          .finally(() =>{
             setLoadingArticles(false);
           });
+           
       }
     }, [selectedSchool]);
+
+    
 
   return (
     <div className="App">

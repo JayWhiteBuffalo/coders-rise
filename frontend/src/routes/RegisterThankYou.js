@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Navbar from "../components/Navbar";
 import {useNavigate} from 'react-router-dom';
 import UserContext from '../UserContext';
-import { useContext } from 'react';
-
+import eventBus from '../common/EventBus';
+import AuthService from '../services/auth.service';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { useAuth } from '../services/AuthProvider';
 const RegisterThankYou = () => {
+    
+    
     const navigate = useNavigate();
-    const { user} = useContext(UserContext);
 
+    
+    const currentUser = AuthService.getCurrentUser();
+    
     if (!user) {
-        navigate('/register');
+        navigate("/register");
 
         alert('Please try registering again!');
         return null;

@@ -4,6 +4,8 @@ import CollegeDataService from "../services/CollegeService";
 import CollegeCard from "./CollegeCard";
 import Favorite from "./Favorite";
 import UserContext from "../UserContext";
+import eventBus from "../common/EventBus";
+import AuthService from "../services/auth.service";
 
 export default function FavoritesList() {
   // state variables

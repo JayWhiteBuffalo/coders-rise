@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import authHeader from "../services/auth-header";
 import Navbar from "./Navbar";
+import ProfilePractice from "./ProfilePractice";
 
 import AuthService from "../services/auth.service";
 
@@ -14,7 +15,7 @@ import AuthService from "../services/auth.service";
 const required = (value) => {
     // Create an instance of Axios with the authorization header
     
-
+    
   if (!value) {
     return (
       <div className="mt-3 p-2 alert alert-danger" role="alert">
@@ -55,7 +56,6 @@ const vpassword = (value) => {
 };
 
 const Register = () => {
-  const Navigate = useNavigate();
   const form = useRef();
   const checkBtn = useRef();
 
@@ -83,6 +83,8 @@ const Register = () => {
     setPassword(password);
   };
 
+  const navigate = useNavigate();
+
   const handleRegister = async (e) => {
     e.preventDefault();
 
@@ -106,6 +108,7 @@ const Register = () => {
         // Handle success
         setMessage(response.data.message);
         setSuccessful(true);
+        navigate("/profile");
       } catch (error) {
         // Handle errors
         const resMessage =
