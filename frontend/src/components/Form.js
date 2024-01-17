@@ -145,26 +145,10 @@ export default function Form() {
             // call to API and setting results, sending alert if no results are found
             if (res.data["results"].length === 0) {
               alert("There are no results for this search!");
-            } else {
-              const sortedResults = res.data["results"].sort((a, b) =>
-                compareAdmissionRates(a, b)
-              );
-              setResults(sortedResults);
-            }
+            } 
+              setResults(res.data["results"]);
           });
-          
-          const compareAdmissionRates = (schoolA, schoolB) => {
-            const admissionRateA = schoolA["latest.admissions.admission_rate.overall"];
-            const admissionRateB = schoolB["latest.admissions.admission_rate.overall"];
-          
-            // Handle cases where admission rates are null or undefined
-            if (admissionRateA === null && admissionRateB === null) return 0;
-            if (admissionRateA === null) return 1;
-            if (admissionRateB === null) return -1;
-          
-            // Compare admission rates
-            return admissionRateB - admissionRateA;
-          };
+  
         }}
       >
         <div className="mb-3">
@@ -264,8 +248,6 @@ export default function Form() {
             </button>
           </>
         )}
-        <p><h10 className="mt-3 lead">Colleges are sorted by the highest acceptance rate to the lowest</h10>
-         </p>
         <table className="table">
          <thead>
             <tr>
@@ -318,12 +300,19 @@ export default function Form() {
   <dialog id="modal" ref={modalRef} fixed>
     <div className="col">
       <div className="card mt-5 h-100">
+        
+      <div className="mt-3">
+            <button className="btn btn-primary" onClick={() => modalRef.current.close()}>Close</button>
+        </div>
         <div className="card-body">
           <h5 className="card-title">{selectedSchool["school.name"]}</h5>
           <h6>{`${selectedSchool["school.degrees_awarded.highest"]} year | ${selectedSchool["school.city"]}, ${selectedSchool["school.state"]}`}</h6>
           <hr></hr>
           <div className="row">
             <div className="col-md-6">
+              
+          <div className="mt-3">
+          </div>
               <p className="card-text">
                 Student Body Size:<br></br>
                 {selectedSchool["latest.student.size"]}
@@ -340,8 +329,24 @@ export default function Form() {
                   ? "Data not provided"
                   : "$" + selectedSchool["latest.cost.tuition.out_of_state"]}
               </p>
+              <div className="mt-3">
+            <a
+              href={
+                selectedSchool["school.school_url"] &&
+                selectedSchool["school.school_url"].includes("http")
+                  ? selectedSchool["school.school_url"]
+                  : `https://${selectedSchool["school.school_url"]}`
+              }
+              target="_blank"
+              className="btn btn-primary"
+            >
+              School Website
+            </a>
+          </div>
             </div>
             <div className="col-md-6">
+              
+          <div className="mt-3">
               <p className="card-text">
                 Admission Rate:<br></br>
                 {selectedSchool["latest.admissions.admission_rate.overall"] !== undefined &&
@@ -408,22 +413,6 @@ export default function Form() {
                   )}
                   </p>
           </div>
-          <div className="mt-3">
-            <a
-              href={
-                selectedSchool["school.school_url"] &&
-                selectedSchool["school.school_url"].includes("http")
-                  ? selectedSchool["school.school_url"]
-                  : `https://${selectedSchool["school.school_url"]}`
-              }
-              target="_blank"
-              className="btn btn-primary"
-            >
-              School Website
-            </a>
-          </div>
-          <div className="mt-3">
-            <button className="btn btn-primary" onClick={() => modalRef.current.close()}>Close</button>
           </div>
         </div>
       </div>
