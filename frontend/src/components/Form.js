@@ -90,7 +90,7 @@ export default function Form() {
   const handleRedirectRegister = function() {
     navigate("/register");
   };
-
+  
   const degreePrograms = cip_4_digit.sort(function(a, b) {
     return a.title < b.title ? -1 : a.title > b.title ? 1 : 0;
   });
