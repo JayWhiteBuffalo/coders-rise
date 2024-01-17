@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
-import Navbar from "./Navbar";
 
 import AuthService from "../services/auth.service";
 
@@ -71,7 +70,6 @@ const Login = () => {
 
   return (
     <div className="col-md-12">
-      <Navbar />
       <div className="card login-logout-card card-container">
         <img
           src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"

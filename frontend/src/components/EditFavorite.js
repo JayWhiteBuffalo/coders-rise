@@ -1,8 +1,7 @@
-import { useContext, useState } from "react";
+import { useState, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import CollegeDataService from "../services/CollegeService";
 import UserContext from "../UserContext";
-const userId = 45;
 
 export default function EditFavorite({ collegeId }) {
   // Data passed over from React-Router (exists on location)
@@ -15,22 +14,22 @@ export default function EditFavorite({ collegeId }) {
   const [collegeName, setCollegeName] = useState(data.name);
   const [appStatus, setAppStatus] = useState(data.appStatus);
   const [notes, setNotes] = useState(data.notes);
-  const {currentUser} = useContext(UserContext);
+  // get user/userid from context
+  const { currentUser } = useContext(UserContext);
 
   function handleDelete() {
-    alert("hit delete");
-    CollegeDataService.remove(userId, collegeId).then((res) => {
-      navigate("/favorites");
+    CollegeDataService.remove(currentUser.id, collegeId).then((res) => {
+      navigate("/favorites"); // Redirect to new page
     });
   }
   return (
-    <>
+    <div className="container">
       <form
         onSubmit={(e) => {
           e.preventDefault();
           // axios call to write to MySQL database table
           const dataForDb = { appStatus: appStatus, notes: notes };
-          CollegeDataService.update(userId, collegeId, dataForDb).then(
+          CollegeDataService.update(currentUser.id, collegeId, dataForDb).then(
             (res) => {
               navigate("/favorites"); // Redirect to new page
             }
@@ -38,7 +37,7 @@ export default function EditFavorite({ collegeId }) {
           );
         }}
       >
-        <div className="form-group">
+        <div className="mb-3 mt-3">
           <input
             className="form-control"
             type="text"
@@ -47,7 +46,8 @@ export default function EditFavorite({ collegeId }) {
             disabled
             value={data.name}
           ></input>
-
+        </div>
+        <div className="mb-3">
           <label htmlFor="appStatus">Application Status</label>
           <select
             value={appStatus}
@@ -67,27 +67,31 @@ export default function EditFavorite({ collegeId }) {
               Accepted
             </option>
           </select>
+        </div>
+        <div className="mb-3">
           <label htmlFor="notes">Notes</label>
           <textarea
             className="form-control"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            value={notes === null ? "" : notes}
+            onChange={(e) =>
+              setNotes(e.target.value === "" ? null : e.target.value)
+            }
           >
             {notes}
           </textarea>
         </div>
 
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="mt-3 me-3 btn btn-primary">
           Save Changes
         </button>
         <button
           type="button"
-          className="btn btn-danger"
+          className="mt-3 btn btn-danger"
           onClick={() => handleDelete()}
         >
           Delete Favorite College
         </button>
       </form>
-    </>
+    </div>
   );
 }

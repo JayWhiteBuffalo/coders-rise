@@ -4,18 +4,9 @@ import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 import { isEmail } from "validator";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import authHeader from "../services/auth-header";
-import Navbar from "./Navbar";
-import ProfilePractice from "./ProfilePractice";
-
 import AuthService from "../services/auth.service";
 
-
 const required = (value) => {
-    // Create an instance of Axios with the authorization header
-    
-    
   if (!value) {
     return (
       <div className="mt-3 p-2 alert alert-danger" role="alert">
@@ -56,6 +47,7 @@ const vpassword = (value) => {
 };
 
 const Register = () => {
+  const navigate = useNavigate();
   const form = useRef();
   const checkBtn = useRef();
 
@@ -74,18 +66,13 @@ const Register = () => {
     const email = e.target.value;
     setEmail(email);
   };
-  const onChangeName = (e) =>
-  {
-    const name = e.target.value;
-  }
+
   const onChangePassword = (e) => {
     const password = e.target.value;
     setPassword(password);
   };
 
-  const navigate = useNavigate();
-
-  const handleRegister = async (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
 
     setMessage("");
@@ -93,92 +80,52 @@ const Register = () => {
 
     form.current.validateAll();
 
-    const axiosWithAuth = axios.create({
-      headers: authHeader(),
-    });
-
     if (checkBtn.current.context._errors.length === 0) {
-      try {
-        const response = await axiosWithAuth.post("http://localhost:8080/api/auth/signup", {
-          email,
-          username,
-          password,
-        });
-  
-        // Handle success
-        setMessage(response.data.message);
-        setSuccessful(true);
-        navigate("/profile");
-      } catch (error) {
-        // Handle errors
-        const resMessage =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-  
-        setMessage(resMessage);
-        setSuccessful(false);
-      }
+      AuthService.register(username, email, password).then(
+        (response) => {
+          setMessage(response.data.message);
+          setSuccessful(true);
+        },
+        (error) => {
+          const resMessage =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
+
+          setMessage(resMessage);
+          setSuccessful(false);
+        }
+      )
     }
   };
-
 
   return (
     <div className="col-md-12">
       <div className="card login-logout-card card-container">
-        <Navbar />
         <img
           src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-          id="myImage"
           alt="profile-img"
           className="profile-img-card"
         />
+
         <Form onSubmit={handleRegister} ref={form}>
           {!successful && (
             <div>
               <div className="mb-3">
-                <label htmlFor="firstName">First Name:</label>
+                <label htmlFor="username">Username</label>
                 <Input
                   type="text"
                   className="form-control"
-                  name="firstName"
-                  onChange={onChangeName}
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="lastName">Last Name:</label>
-                <Input
-                  type="text"
-                  className="form-control"
-                  name="lastName"
-                  onChange={onChangeName}
+                  name="username"
+                  value={username}
+                  onChange={onChangeUsername}
+                  validations={[required, vusername]}
                 />
               </div>
 
               <div className="mb-3">
-                <label htmlFor="username">Username</label>
-                <Input
-                   type="text"
-                   className="form-control"
-                   name="username"
-                   value={username}
-                   onChange={onChangeUsername}
-                   validations={[required, vusername]}
-                />
-                </div>
-              <div className="mb-3">
-              <label htmlFor="password">Password</label>
-              <Input
-                type="password"
-                className="form-control"
-                name="password"
-                value={password}
-                onChange={onChangePassword}
-                validations={[required, vpassword]}
-              />
-                            <div className="mb-3">
                 <label htmlFor="email">Email</label>
                 <Input
                   type="text"
@@ -189,7 +136,19 @@ const Register = () => {
                   validations={[required, validEmail]}
                 />
               </div>
+
+              <div className="mb-3">
+                <label htmlFor="password">Password</label>
+                <Input
+                  type="password"
+                  className="form-control"
+                  name="password"
+                  value={password}
+                  onChange={onChangePassword}
+                  validations={[required, vpassword]}
+                />
               </div>
+
               <button className="mt-3 btn btn-primary btn-block">
                 Sign Up
               </button>
@@ -205,7 +164,6 @@ const Register = () => {
                 role="alert"
               >
                 {message}
-                
               </div>
             </div>
           )}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Routes, Route, Link, NavLink } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import UserContext from "./UserContext";
@@ -9,7 +9,6 @@ import AuthService from "./services/auth.service";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import Home from "./components/Home";
-import Profile from "./components/Profile";
 import Favorites from "./routes/Favorites";
 import Search from "./routes/Search";
 import EventBus from "./common/EventBus";
@@ -18,7 +17,7 @@ import Contact from "./routes/Contact";
 import Navbar from "./components/Navbar";
 import Account from "./routes/Account";
 import ProfilePractice from "./components/ProfilePractice";
-import ThankYou from "./routes/ThankYou";
+import ThankYou from "./components/ThankYou";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(undefined);
@@ -47,6 +46,7 @@ function App() {
 
   return (
     <div>
+      <Navbar logout={logOut} user={currentUser} />
       <>
         <UserContext.Provider value={{ currentUser, setCurrentUser }}>
           <Routes>

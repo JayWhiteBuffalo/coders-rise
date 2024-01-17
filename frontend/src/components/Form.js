@@ -129,34 +129,8 @@ export default function Form() {
 
     const openModal = (school) => {
       setSelectedSchool(school);
-      modalRef.current.showModal();
+      modalRef.current && modalRef.current.showModal();
     }
-
-    let articleURL='';
-    let articleTitle='';
-    useEffect(() => {
-      if (selectedSchool) {
-    
-        const collegeName = selectedSchool["school.name"];
-        const baseArticleURL = `http://gnews.io/api/v4`;
-    
-        axios.get(baseArticleURL+ `/search?q=${collegeName}&lang=en&country=us&max=1&apikey=${process.env.REACT_APP_API_ARTICLE_KEY}`)
-        .then(response => {
-          const articles = response.data.articles;
-          articleURL = articles.url;
-          articleTitle=articles.title;
-
-          console.log(articleTitle);
-          console.log(articleURL);
-        })
-        .catch((error) => console.error('Error fetching articles:', error))
-       
-          .finally(() =>{
-            setLoadingArticles(false);
-          });
-           
-      }
-    }, [selectedSchool]);
 
     
 
@@ -387,7 +361,52 @@ export default function Form() {
                   ? selectedSchool["latest.admissions.act_scores.midpoint.cumulative"]
                   : "Data not provided"}
               </p>
-            </div>
+              <p>
+            {currentUser ? (
+              <button
+              type="submit"
+              className="mt-5 btn btn-primary"
+              onClick={handleAddFavorites}
+              >
+              Add to Your Favorites
+            </button>
+            ) : (
+            <>
+              <p className="mt-3 lead">
+                Create an account and login so you can save favorite colleges.
+              </p>
+              <button
+                type="submit"
+                className="btn btn-success"
+                onClick={handleRedirectRegister}
+              >
+                Signup to Save Favorites
+              </button>
+            </>
+              )}
+              </p>
+              <p key={selectedSchool["school.id"]}>
+                  {currentUser ? (
+                    <th className="checkbox">
+                      <input
+                        onChange={(e) => handleCheck(e)}
+                        className="form-check-input"
+                        type="checkbox"
+                        value={selectedSchool["id"]}
+                      />
+                    </th>
+                  ) : (
+                    <th className="checkbox">
+                      <input
+                        onChange={(e) => handleCheck(e)}
+                        className="form-check-input"
+                        type="checkbox"
+                        value={selectedSchool["id"]}
+                        disabled
+                      />
+                    </th>
+                  )}
+                  </p>
           </div>
           <div className="mt-3">
             <a
@@ -404,21 +423,11 @@ export default function Form() {
             </a>
           </div>
           <div className="mt-3">
-            {/* Render articles */}
-            <h4>Articles:</h4>
-            {loadingArticles ? (
-              <p>Loading articles...</p>
-            ) : (
-              articles.map((article, index) => (
-                <a href={article.url} key={index}>{index} : {article.title}</a>
-              ))
-            )}
-          </div>
-          <div className="mt-3">
             <button className="btn btn-primary" onClick={() => modalRef.current.close()}>Close</button>
           </div>
         </div>
       </div>
+    </div>
     </div>
   </dialog>
 )}

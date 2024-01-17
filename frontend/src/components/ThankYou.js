@@ -1,10 +1,9 @@
 import React from 'react';
-import Navbar from "../components/Navbar";
+import Navbar from "./Navbar";
 
 const ThankYou = () => {
   return (
     <div>
-        <Navbar/>
     <main className="container">
     <div className="bg-light p-5 rounded">
         <h1>Thank you!</h1>

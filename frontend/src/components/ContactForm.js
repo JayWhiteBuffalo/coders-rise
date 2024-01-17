@@ -6,7 +6,7 @@ import { useContext } from "react";
 
 const ContactForm = () => {
 
-
+  const {user} = useContext(UserContext);
   const navigate = useNavigate();
 
   let [formData, setFormData] = useState({
@@ -24,6 +24,7 @@ const ContactForm = () => {
       [e.target.id]: e.target.value,
     });
   };
+
 
 
   const handleSubmit = async(e) => {
@@ -55,14 +56,36 @@ const ContactForm = () => {
     }
   };
 
+  if (user) {
+    formData.username = user.username;
+    console.log(user.username);
+  } 
+
   return (
 
-    <form onSubmit={handleSubmit}>
-      <div className="mb-3">
-        <label htmlFor="username" className="form-label">
+  <form onSubmit={handleSubmit}>
+    <div className="mb-3"></div>
+    {user ? (
+      <div>
+      <label htmlFor="username" className="form-label">
+          Username 
+        </label>
+        <input
+          type="text"
+          className="form-control"
+          id="username"
+          value={formData.username}
+          required
+          />
+        </div>
+    ) : (
+      <>
+            <div>
+      <label htmlFor="username" className="form-label">
           Username (if applicable)
         </label>
         <input
+          placeholder={formData.username}
           type="username"
           className="form-control"
           id="username"
@@ -70,8 +93,11 @@ const ContactForm = () => {
           onChange={handleChange}
           required
           />
-      </div>
-            <div className="mb-3">
+        </div>
+      </>
+    )}
+
+          <div className="mb-3">
         <label htmlFor="email" className="form-label">
           Email
         </label>
